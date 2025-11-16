@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import VehicleModal from '../components/VehicleModal';
 import { mockVehicles, mockResidents } from '../mockData';
 import { Vehicle, Resident } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { TrashIcon, PencilIcon, CarIcon, MotorbikeIcon } from '../components/icons';
 
 const VehicleCard: React.FC<{

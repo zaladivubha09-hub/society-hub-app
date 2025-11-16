@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import Modal from '../components/Modal';
 import { mockPolls as initialPolls } from '../mockData';
 import { Poll, PollOption } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { PlusIcon, TrashIcon, CheckCircleIcon } from '../components/icons';
 
 // NewPollModal Component

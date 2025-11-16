@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import Modal from '../components/Modal';
 import { mockComplaints, mockResidents, mockWorkers } from '../mockData';
 import { Complaint, ComplaintStatus, Resident, Worker } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 
 const Complaints: React.FC = () => {
     const { isAdmin, user } = useAuth();
@@ -15,7 +15,7 @@ const Complaints: React.FC = () => {
     // Form state for new/edit complaint
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState<'Plumbing' | 'Electricity' | 'Security' | 'Other'>('Other');
+    const [category, setCategory] = useState<Complaint['category']>('Other');
     const [assignedTo, setAssignedTo] = useState('');
     const [status, setStatus] = useState<ComplaintStatus>(ComplaintStatus.Pending);
 

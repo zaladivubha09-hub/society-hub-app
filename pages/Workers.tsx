@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import WorkerModal from '../components/WorkerModal';
 import { mockWorkers } from '../mockData';
 import { Worker } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 
 const Workers: React.FC = () => {
     const { isAdmin } = useAuth();

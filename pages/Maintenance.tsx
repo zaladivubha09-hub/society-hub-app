@@ -5,7 +5,7 @@ import PaymentModal from '../components/PaymentModal';
 import ReceiptModal from '../components/ReceiptModal';
 import { mockMaintenance, mockResidents } from '../mockData';
 import { Maintenance, Resident } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { DocumentDownloadIcon, BellIcon } from '../components/icons';
 
 type MaintenanceWithResident = Maintenance & { resident?: Resident };

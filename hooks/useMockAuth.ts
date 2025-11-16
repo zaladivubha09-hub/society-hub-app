@@ -1,17 +1,3 @@
-import { Role } from '../types';
-
-// This is a mock hook to simulate an authenticated user.
-export const useMockAuth = () => {
-  const user = {
-    id: 'user1',
-    name: 'Admin User',
-    role: Role.Admin,
-    avatar: 'https://api.dicebear.com/8.x/initials/svg?seed=Admin',
-  };
-
-  return {
-    user,
-    isAdmin: user.role === Role.Admin,
-    loading: false,
-  };
-};
+// This file is deprecated and replaced by context/AuthContext.tsx.
+// It is kept to avoid breaking older non-critical imports, but should be removed in the future.
+export {};

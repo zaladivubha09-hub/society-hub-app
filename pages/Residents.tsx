@@ -4,7 +4,7 @@ import Card from '../components/Card';
 import ResidentModal from '../components/ResidentModal';
 import { mockResidents } from '../mockData';
 import { Resident } from '../types';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { PencilIcon } from '../components/icons';
 
 const Residents: React.FC = () => {

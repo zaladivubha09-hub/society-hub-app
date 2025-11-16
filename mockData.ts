@@ -1,4 +1,4 @@
-import { Resident, Maintenance, Vehicle, Complaint, Worker, Poll, Notification, SocietyDocument, ComplaintStatus } from './types';
+import { Resident, Maintenance, Vehicle, Complaint, Worker, Poll, Notification, SocietyDocument, ComplaintStatus } from '../types';
 
 export const mockResidents: Resident[] = [
   { id: 'res1', name: 'Aarav Sharma', flatNumber: 'A-101', familyPhotoUrl: 'https://picsum.photos/seed/fam1/400/300', isOwner: true, contact: '9876543210' },

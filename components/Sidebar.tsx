@@ -1,9 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import {
   DashboardIcon, HomeIcon, UsersIcon, BellIcon, WrenchIcon, ShieldCheckIcon, ChartBarIcon, DocumentTextIcon, XIcon,
-  ChevronDoubleLeftIcon, ChevronDoubleRightIcon
+  ChevronDoubleLeftIcon, ChevronDoubleRightIcon, LogoutIcon
 } from './icons';
 
 interface SidebarProps {
@@ -14,7 +14,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    // The ProtectedRoute will handle redirecting to /login
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
@@ -58,6 +63,14 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarC
               <p className="text-sm font-medium text-white truncate">{user.name}</p>
               <p className="text-xs font-medium text-gray-400">{user.role}</p>
           </div>
+           <button 
+            onClick={handleLogout} 
+            className={`ml-2 p-2 rounded-full text-text-secondary hover:bg-gray-700 hover:text-white transition-colors ${isCollapsed ? 'hidden' : ''}`}
+            aria-label="Logout"
+            title="Logout"
+          >
+            <LogoutIcon className="h-5 w-5" />
+          </button>
         </div>
     ) : null
   );

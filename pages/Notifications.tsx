@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
 import { mockNotifications as initialNotifications } from '../mockData';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { BellIcon, WrenchIcon, UsersIcon } from '../components/icons';
 import { Notification } from '../types';
 
-const NotificationIcon = ({type}: {type: string}) => {
+const NotificationIcon = ({type}: {type: 'Meeting' | 'Shutdown' | 'Event' | 'General'}) => {
     const icons = {
         'Meeting': <UsersIcon className="h-6 w-6 text-blue-400" />,
         'Shutdown': <WrenchIcon className="h-6 w-6 text-yellow-400" />,
@@ -65,7 +65,7 @@ const Notifications: React.FC = () => {
                     </div>
                     <div>
                         <label htmlFor="type" className="block text-sm font-medium text-text-secondary">Type</label>
-                        <select id="type" value={type} onChange={e => setType(e.target.value as any)} className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <select id="type" value={type} onChange={e => setType(e.target.value as  Notification['type'])}className="mt-1 w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                             <option>General</option>
                             <option>Event</option>
                             <option>Meeting</option>

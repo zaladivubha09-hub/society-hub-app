@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
 import { mockDocuments } from '../mockData';
-import { useMockAuth as useAuth } from '../hooks/useMockAuth';
+import { useAuth } from '../context/AuthContext';
 import { DocumentTextIcon } from '../components/icons';
 
 const Documents: React.FC = () => {

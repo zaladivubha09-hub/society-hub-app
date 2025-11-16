@@ -10,13 +10,22 @@ import Complaints from './pages/Complaints';
 import Polls from './pages/Polls';
 import Documents from './pages/Documents';
 import Residents from './pages/Residents';
+import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
     <HashRouter>
-      {/* Fix: Use Layout as a layout route, with other routes nested inside. */}
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<Login />} />
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="maintenance" element={<Maintenance />} />
