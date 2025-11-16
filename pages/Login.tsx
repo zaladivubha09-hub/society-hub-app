@@ -36,7 +36,7 @@ const Login: React.FC = () => {
         <div className="text-center">
           <div className="flex justify-center items-center mb-4">
             <HomeIcon className="h-10 w-auto text-primary" />
-            <span className="ml-3 text-white text-3xl font-bold">SocietyHub</span>
+            <span className="ml-3 text-white text-3xl font-bold">MADHAV HOMES</span>
           </div>
           <p className="text-text-secondary">Sign in to manage your society</p>
         </div>
