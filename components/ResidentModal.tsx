@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Resident } from '../types';
 import { CameraIcon } from './icons';
+import { storage } from '../firebase';
 
 interface ResidentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (resident: Omit<Resident, 'id'> | Resident) => void;
+  onSave: (resident: Omit<Resident, 'id'> | Resident) => Promise<void>;
   resident: Resident | null;
 }
 
@@ -16,15 +18,22 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
     flatNumber: '',
     contact: '',
     isOwner: true,
-    familyPhotoUrl: 'https://picsum.photos/seed/newfam/400/300', // Placeholder
+    familyPhotoUrl: '',
     idProofUrl: '',
     rentalAgreementUrl: '',
   };
     
   const [formData, setFormData] = useState(initialFormState);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [idProofFileName, setIdProofFileName] = useState<string | null>(null);
-  const [agreementFileName, setAgreementFileName] = useState<string | null>(null);
+  
+  // State to hold actual File objects
+  const [files, setFiles] = useState<{ [key: string]: File | null }>({
+      familyPhotoUrl: null,
+      idProofUrl: null,
+      rentalAgreementUrl: null
+  });
+
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (resident) {
@@ -33,19 +42,21 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
         flatNumber: resident.flatNumber,
         contact: resident.contact,
         isOwner: resident.isOwner,
-        familyPhotoUrl: resident.familyPhotoUrl,
+        familyPhotoUrl: resident.familyPhotoUrl || '',
         idProofUrl: resident.idProofUrl || '',
         rentalAgreementUrl: resident.rentalAgreementUrl || '',
       });
-      setPhotoPreview(resident.familyPhotoUrl);
-      setIdProofFileName(resident.idProofUrl ? 'ID Proof Uploaded' : null);
-      setAgreementFileName(resident.rentalAgreementUrl ? 'Agreement Uploaded' : null);
+      setPhotoPreview(resident.familyPhotoUrl || null);
     } else {
       setFormData(initialFormState);
       setPhotoPreview(null);
-      setIdProofFileName(null);
-      setAgreementFileName(null);
     }
+    // Reset files on open/close
+    setFiles({
+        familyPhotoUrl: null,
+        idProofUrl: null,
+        rentalAgreementUrl: null
+    });
   }, [resident, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,24 +73,27 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
           const file = e.target.files[0];
           const { name } = e.target;
           
-          const dummyUrl = `/${file.name}`;
-          setFormData(prev => ({ ...prev, [name]: dummyUrl }));
+          // Store the file object for upload later
+          setFiles(prev => ({ ...prev, [name]: file }));
 
+          // Create a local preview
           if (name === 'familyPhotoUrl') {
               const reader = new FileReader();
               reader.onloadend = () => {
                   setPhotoPreview(reader.result as string);
               };
               reader.readAsDataURL(file);
-          } else if (name === 'idProofUrl') {
-              setIdProofFileName(file.name);
-          } else if (name === 'rentalAgreementUrl') {
-              setAgreementFileName(file.name);
           }
       }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const uploadFile = async (file: File, path: string): Promise<string> => {
+      const storageRef = storage.ref(path);
+      await storageRef.put(file);
+      return await storageRef.getDownloadURL();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^\d{10}$/.test(formData.contact)) {
         alert('Please enter a valid 10-digit contact number.');
@@ -90,10 +104,42 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
         return;
     }
 
-    if (resident) {
-      onSave({ ...resident, ...formData });
-    } else {
-      onSave(formData);
+    setUploading(true);
+    
+    try {
+        let updatedFormData = { ...formData };
+
+        // Upload Family Photo
+        if (files.familyPhotoUrl) {
+            const url = await uploadFile(files.familyPhotoUrl, `residents/${Date.now()}_family_${files.familyPhotoUrl.name}`);
+            updatedFormData.familyPhotoUrl = url;
+        } else if (!updatedFormData.familyPhotoUrl && !resident) {
+             // Set default if new and no photo provided
+             updatedFormData.familyPhotoUrl = 'https://picsum.photos/seed/newfam/400/300';
+        }
+
+        // Upload ID Proof
+        if (files.idProofUrl) {
+             const url = await uploadFile(files.idProofUrl, `documents/${Date.now()}_id_${files.idProofUrl.name}`);
+             updatedFormData.idProofUrl = url;
+        }
+
+        // Upload Rental Agreement
+        if (files.rentalAgreementUrl) {
+             const url = await uploadFile(files.rentalAgreementUrl, `documents/${Date.now()}_agreement_${files.rentalAgreementUrl.name}`);
+             updatedFormData.rentalAgreementUrl = url;
+        }
+
+        if (resident) {
+          await onSave({ ...resident, ...updatedFormData });
+        } else {
+          await onSave(updatedFormData);
+        }
+    } catch (error) {
+        console.error("Error uploading files:", error);
+        alert("Failed to upload images. Please check your connection.");
+    } finally {
+        setUploading(false);
     }
   };
 
@@ -132,9 +178,9 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
             <label className="block text-sm font-medium text-text-secondary">Family Photo</label>
             <div className="mt-2 flex items-center gap-4">
                 {photoPreview ? (
-                    <img src={photoPreview} alt="Family" className="w-16 h-16 rounded-md object-cover" />
+                    <img src={photoPreview} alt="Family" className="w-16 h-16 rounded-md object-cover border border-border" />
                 ) : (
-                    <div className="w-16 h-16 rounded-md bg-background flex items-center justify-center text-text-secondary">
+                    <div className="w-16 h-16 rounded-md bg-background border border-border flex items-center justify-center text-text-secondary">
                         <CameraIcon className="w-8 h-8"/>
                     </div>
                 )}
@@ -142,6 +188,7 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
                     <span>{photoPreview ? 'Change Photo' : 'Upload Photo'}</span>
                     <input id="family-photo-upload" name="familyPhotoUrl" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" />
                 </label>
+                {files.familyPhotoUrl && <span className="text-xs text-green-400">Selected: {files.familyPhotoUrl.name}</span>}
             </div>
         </div>
 
@@ -152,7 +199,7 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
                     ID Proof
                 </label>
                 <input id="id-proof-upload" name="idProofUrl" type="file" className="sr-only" onChange={handleFileChange} />
-                <span className="ml-4 text-sm text-gray-400 truncate">{idProofFileName || "No file chosen"}</span>
+                <span className="ml-4 text-sm text-gray-400 truncate">{files.idProofUrl?.name || (formData.idProofUrl ? "File Uploaded" : "No file chosen")}</span>
             </div>
             {!formData.isOwner && (
                 <div className="flex items-center">
@@ -160,14 +207,16 @@ const ResidentModal: React.FC<ResidentModalProps> = ({ isOpen, onClose, onSave, 
                         Rental Agreement
                     </label>
                     <input id="agreement-upload" name="rentalAgreementUrl" type="file" className="sr-only" onChange={handleFileChange} />
-                    <span className="ml-4 text-sm text-gray-400 truncate">{agreementFileName || "No file chosen"}</span>
+                    <span className="ml-4 text-sm text-gray-400 truncate">{files.rentalAgreementUrl?.name || (formData.rentalAgreementUrl ? "File Uploaded" : "No file chosen")}</span>
                 </div>
             )}
         </div>
         
         <div className="flex justify-end space-x-4 pt-4 border-t border-border mt-6">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded-md text-sm font-medium text-text-secondary bg-gray-700 hover:bg-gray-600 transition-transform duration-150 active:scale-95">Cancel</button>
-          <button type="submit" className="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-transform duration-150 active:scale-95">Save Resident</button>
+          <button type="button" onClick={onClose} disabled={uploading} className="px-4 py-2 rounded-md text-sm font-medium text-text-secondary bg-gray-700 hover:bg-gray-600 transition-transform duration-150 active:scale-95 disabled:opacity-50">Cancel</button>
+          <button type="submit" disabled={uploading} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-transform duration-150 active:scale-95 disabled:opacity-50">
+              {uploading ? 'Saving...' : 'Save Resident'}
+          </button>
         </div>
       </form>
     </Modal>

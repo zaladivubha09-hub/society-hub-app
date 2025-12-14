@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
 import VehicleModal from '../components/VehicleModal';
+import { Vehicle } from '../types';
 import { mockVehicles, mockResidents } from '../mockData';
-import { Vehicle, Resident } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { TrashIcon, PencilIcon, CarIcon, MotorbikeIcon } from '../components/icons';
 
@@ -45,14 +45,13 @@ const VehicleCard: React.FC<{
 
 const Vehicles: React.FC = () => {
     const { isAdmin } = useAuth();
-    const [vehicles, setVehicles] = useState(mockVehicles);
-    const [residents] = useState(mockResidents);
+    const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const getResidentName = (residentId: string) => {
-        return residents.find(r => r.id === residentId)?.name || 'Unknown';
+        return mockResidents.find(r => r.id === residentId)?.name || 'Unknown';
     };
 
     const handleOpenModal = (vehicle: Vehicle | null = null) => {
@@ -67,15 +66,10 @@ const Vehicles: React.FC = () => {
     
     const handleSaveVehicle = (vehicleData: Omit<Vehicle, 'id'> | Vehicle) => {
         if ('id' in vehicleData) {
-            // Editing existing vehicle
             setVehicles(vehicles.map(v => v.id === vehicleData.id ? vehicleData : v));
         } else {
-            // Adding new vehicle
-            const newVehicle: Vehicle = {
-                id: `v${vehicles.length + 1}${Date.now()}`,
-                ...vehicleData,
-            };
-            setVehicles([newVehicle, ...vehicles]);
+             const newVehicle = { ...vehicleData, id: `v${Date.now()}` };
+             setVehicles([...vehicles, newVehicle]);
         }
         handleCloseModal();
     };
@@ -136,7 +130,7 @@ const Vehicles: React.FC = () => {
                 onClose={handleCloseModal}
                 onSave={handleSaveVehicle}
                 vehicle={selectedVehicle}
-                residents={residents}
+                residents={mockResidents}
             />
         </div>
     );

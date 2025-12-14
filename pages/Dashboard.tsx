@@ -1,15 +1,48 @@
-
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
-import { mockResidents, mockComplaints, mockMaintenance, mockNotifications } from '../mockData';
 import { ComplaintStatus } from '../types';
+import { mockResidents, mockComplaints, mockMaintenance, mockNotifications } from '../mockData';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard: React.FC = () => {
-  const pendingComplaints = mockComplaints.filter(c => c.status === ComplaintStatus.Pending).length;
-  const maintenanceDue = mockMaintenance.filter(m => m.status !== 'Paid').reduce((acc, m) => acc + m.amount, 0);
+  const { isAdmin } = useAuth();
+  const [stats, setStats] = useState({
+    residents: 0,
+    pendingComplaints: 0,
+    maintenanceDue: 0,
+    totalMaintenanceCollected: 0,
+  });
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Calculate stats from mock data
+    const residentsCount = mockResidents.length;
+    const pendingComplaintsCount = mockComplaints.filter(c => c.status === ComplaintStatus.Pending).length;
+    
+    let due = 0;
+    let collected = 0;
+    mockMaintenance.forEach(m => {
+      if (m.status === 'Paid') {
+        collected += m.amount;
+      } else {
+        due += m.amount;
+      }
+    });
+
+    const events = mockNotifications
+        .filter(n => new Date(n.date) > new Date()) // Future events
+        .slice(0, 3);
+
+    setStats({
+        residents: residentsCount,
+        pendingComplaints: pendingComplaintsCount,
+        maintenanceDue: due,
+        totalMaintenanceCollected: collected
+    });
+    setUpcomingEvents(events);
+  }, []);
 
   const chartData = [
     { name: 'Jan', Collected: 280000, Due: 100000 },
@@ -19,8 +52,6 @@ const Dashboard: React.FC = () => {
     { name: 'May', Collected: 295000, Due: 5000 },
     { name: 'Jun', Collected: 280000, Due: 20000 },
   ];
-  
-  const upcomingEvents = mockNotifications.filter(n => new Date(n.date) > new Date()).slice(0, 3);
 
   return (
     <div>
@@ -30,22 +61,22 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card>
           <h3 className="text-lg font-medium text-text-secondary">Total Residents</h3>
-          <p className="mt-2 text-3xl font-bold text-text-primary">{mockResidents.length}</p>
+          <p className="mt-2 text-3xl font-bold text-text-primary">{stats.residents}</p>
         </Card>
         <Card>
           <h3 className="text-lg font-medium text-text-secondary">Pending Complaints</h3>
-          <p className="mt-2 text-3xl font-bold text-yellow-400">{pendingComplaints}</p>
+          <p className="mt-2 text-3xl font-bold text-yellow-400">{stats.pendingComplaints}</p>
         </Card>
         <Card>
           <h3 className="text-lg font-medium text-text-secondary">Total Maintenance Due</h3>
-          <p className="mt-2 text-3xl font-bold text-red-500">₹{maintenanceDue.toLocaleString('en-IN')}</p>
+          <p className="mt-2 text-3xl font-bold text-red-500">₹{stats.maintenanceDue.toLocaleString('en-IN')}</p>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maintenance Chart */}
         <Card className="lg:col-span-2">
-          <h3 className="text-xl font-semibold mb-4 text-text-primary">Monthly Maintenance Collection</h3>
+          <h3 className="text-xl font-semibold mb-4 text-text-primary">Monthly Maintenance Collection (Trend)</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
@@ -72,7 +103,7 @@ const Dashboard: React.FC = () => {
                     <p className="text-xs text-gray-500 mt-1">{new Date(event.date).toLocaleDateString()}</p>
                 </div>
              ))}
-             {upcomingEvents.length === 0 && <p className="text-text-secondary">No upcoming events.</p>}
+             {upcomingEvents.length === 0 && <p className="text-text-secondary">No upcoming events found.</p>}
           </div>
         </Card>
       </div>

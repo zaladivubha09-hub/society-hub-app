@@ -3,8 +3,8 @@ import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
 import PaymentModal from '../components/PaymentModal';
 import ReceiptModal from '../components/ReceiptModal';
-import { mockMaintenance, mockResidents } from '../mockData';
 import { Maintenance, Resident } from '../types';
+import { mockMaintenance, mockResidents } from '../mockData';
 import { useAuth } from '../context/AuthContext';
 import { DocumentDownloadIcon, BellIcon } from '../components/icons';
 
@@ -27,12 +27,13 @@ const DefaulterCard: React.FC<{ resident: Resident; totalDue: number; rank: numb
 
 const MaintenancePage: React.FC = () => {
     const { isAdmin } = useAuth();
-    const [bills, setBills] = useState<MaintenanceWithResident[]>(
-        mockMaintenance.map(m => ({
-            ...m,
-            resident: mockResidents.find(r => r.id === m.residentId)
-        }))
-    );
+    // Combine maintenance data with resident data
+    const initialBills: MaintenanceWithResident[] = mockMaintenance.map(bill => ({
+        ...bill,
+        resident: mockResidents.find(r => r.id === bill.residentId)
+    }));
+
+    const [bills, setBills] = useState<MaintenanceWithResident[]>(initialBills);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [selectedBill, setSelectedBill] = useState<MaintenanceWithResident | null>(null);
     const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);

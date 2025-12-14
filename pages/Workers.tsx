@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
 import WorkerModal from '../components/WorkerModal';
-import { mockWorkers } from '../mockData';
 import { Worker } from '../types';
+import { mockWorkers } from '../mockData';
 import { useAuth } from '../context/AuthContext';
 
 const Workers: React.FC = () => {
@@ -24,16 +24,10 @@ const Workers: React.FC = () => {
 
     const handleSaveWorker = (workerData: Omit<Worker, 'id'> | Worker) => {
         if ('id' in workerData) {
-            // Editing
             setWorkers(workers.map(w => w.id === workerData.id ? workerData : w));
         } else {
-            // Adding
-            const newWorker: Worker = {
-                id: `w${workers.length + 1}${Date.now()}`,
-                rating: 0, // New workers start with 0 rating
-                ...workerData
-            };
-            setWorkers([newWorker, ...workers]);
+            const newWorker = { ...workerData, id: `w${Date.now()}`, rating: 0 };
+            setWorkers([...workers, newWorker]);
         }
         handleCloseModal();
     };

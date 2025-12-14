@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
-import { mockNotifications as initialNotifications } from '../mockData';
 import { useAuth } from '../context/AuthContext';
 import { BellIcon, WrenchIcon, UsersIcon } from '../components/icons';
+import { mockNotifications } from '../mockData';
 import { Notification } from '../types';
 
 const NotificationIcon = ({type}: {type: 'Meeting' | 'Shutdown' | 'Event' | 'General'}) => {
@@ -18,7 +18,7 @@ const NotificationIcon = ({type}: {type: 'Meeting' | 'Shutdown' | 'Event' | 'Gen
 
 const Notifications: React.FC = () => {
     const { isAdmin } = useAuth();
-    const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+    const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
     const [isModalOpen, setIsModalOpen] = useState(false);
     
     // Form state
@@ -41,11 +41,11 @@ const Notifications: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const newNotification: Notification = {
-            id: `n${notifications.length + 1}`,
+            id: `n${Date.now()}`,
             title,
             content,
             type,
-            date: new Date().toISOString(),
+            date: new Date().toISOString().split('T')[0],
         };
         setNotifications([newNotification, ...notifications]);
         handleCloseModal();
@@ -84,7 +84,7 @@ const Notifications: React.FC = () => {
             </Modal>
             <div className="flow-root">
                 <ul className="-mb-8">
-                    {notifications.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((notification, idx) => (
+                    {notifications.map((notification, idx) => (
                         <li key={notification.id}>
                             <div className="relative pb-8">
                                 {idx !== notifications.length - 1 ? (

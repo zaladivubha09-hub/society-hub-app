@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
 import Modal from '../components/Modal';
-import { mockPolls as initialPolls } from '../mockData';
 import { Poll, PollOption } from '../types';
+import { mockPolls } from '../mockData';
 import { useAuth } from '../context/AuthContext';
 import { PlusIcon, TrashIcon, CheckCircleIcon } from '../components/icons';
 
@@ -164,14 +164,14 @@ const PollCard: React.FC<{
 // Main Polls Page Component
 const Polls: React.FC = () => {
     const { user, isAdmin } = useAuth();
-    const [polls, setPolls] = useState<Poll[]>(initialPolls);
+    const [polls, setPolls] = useState<Poll[]>(mockPolls);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleVote = (pollId: string, optionId: string) => {
         if(!user) return;
         setPolls(currentPolls => 
             currentPolls.map(poll => {
-                if (poll.id === pollId && !poll.votedBy.includes(user.id)) {
+                if (poll.id === pollId) {
                     return {
                         ...poll,
                         totalVotes: poll.totalVotes + 1,
@@ -188,7 +188,7 @@ const Polls: React.FC = () => {
 
     const handleCreatePoll = (question: string, optionsText: string[]) => {
         const newPoll: Poll = {
-            id: `p${polls.length + 1}${Date.now()}`,
+            id: `p${Date.now()}`,
             question,
             isActive: true,
             options: optionsText.map((text, index) => ({
@@ -204,8 +204,7 @@ const Polls: React.FC = () => {
     };
     
     if (!user) {
-        // This view is protected, but as a fallback:
-        return <div className="text-center p-8">Loading user information...</div>;
+        return null;
     }
 
     return (
