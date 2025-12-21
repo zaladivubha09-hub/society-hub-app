@@ -66,10 +66,7 @@ const Login: React.FC = () => {
       } else if (err.code === 'auth/too-many-requests') {
           setError('Too many failed attempts. Please try again later.');
       } else if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-          // This specific error can sometimes indicate an API Key issue if occurring during a valid register/login attempt
           setError('Invalid email or password.');
-      } else if (err.message && err.message.includes('auth/invalid-credential')) {
-           setError('Configuration Error: The Firebase API Key may be invalid or expired.');
       } else {
           setError(err.message || 'Authentication failed. Please check credentials.');
       }
