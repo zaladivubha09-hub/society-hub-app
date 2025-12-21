@@ -99,4 +99,4 @@ export interface SocietyDocument {
   url: string;
   category: 'Registration' | 'AGM Minutes' | 'Agreement';
   uploadDate: string;
-}
+} 
