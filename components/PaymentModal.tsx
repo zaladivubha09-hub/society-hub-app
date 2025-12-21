@@ -20,7 +20,7 @@ const LoadingSpinner: React.FC = () => (
     </svg>
 );
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onConfirm, bill }) => {
+export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onConfirm, bill }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -137,6 +137,4 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onConfirm,
             )}
         </Modal>
     );
-};
-
-export default PaymentModal;
+}; 
