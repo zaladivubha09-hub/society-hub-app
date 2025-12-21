@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarC
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
               <HomeIcon className="h-8 w-auto text-primary" />
-              <span className="ml-3 text-white text-lg font-bold">SocietyHub</span>
+              <span className="ml-3 text-white text-lg font-bold">MADHAV HOMES</span>
             </div>
             <nav className="mt-5 px-2 space-y-1">
               <NavLinks isCollapsed={false} />
@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, sidebarC
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
               <div className={`flex items-center flex-shrink-0 px-4 ${sidebarCollapsed ? 'justify-center' : ''}`}>
                 <HomeIcon className="h-8 w-auto text-primary" />
-                <span className={`ml-3 text-white text-xl font-bold ${sidebarCollapsed ? 'hidden' : ''}`}>SocietyHub</span>
+                <span className={`ml-3 text-white text-xl font-bold ${sidebarCollapsed ? 'hidden' : ''}`}>MADHAV HOMES</span>
               </div>
               <nav className="mt-8 flex-1 px-2 space-y-2">
                 <NavLinks isCollapsed={sidebarCollapsed} />
