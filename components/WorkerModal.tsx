@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Worker } from '../types';
 // Fix: Imported DocumentTextIcon.
-import { PencilIcon, CheckIcon, XIcon, CameraIcon, DocumentTextIcon } from './icons';
+import { PencilIcon, CheckIcon, CameraIcon, DocumentTextIcon } from './icons';
 
 interface WorkerModalProps {
   isOpen: boolean;
