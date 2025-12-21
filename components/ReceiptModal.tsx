@@ -48,7 +48,7 @@ const ReceiptModal: React.FC<ReceiptModalProps> = ({ isOpen, onClose, bill }) =>
                 <div className="flex items-center">
                     <HomeIcon className="h-10 w-10 text-indigo-600" />
                     <div className="ml-2">
-                        <h2 className="text-xl font-bold">SocietyHub</h2>
+                        <h2 className="text-xl font-bold">MADHAV HOMES</h2>
                         <p className="text-sm text-gray-500">Official Receipt</p>
                     </div>
                 </div>
