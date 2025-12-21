@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
       />
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="md:hidden flex justify-between items-center bg-card p-4 border-b border-border">
-            <h1 className="text-xl font-bold">SocietyHub</h1>
+            <h1 className="text-xl font-bold">MADHAV HOMES</h1>
             <button onClick={() => setSidebarOpen(true)} className="text-gray-300 hover:text-white">
                 <MenuIcon className="h-6 w-6" />
             </button>
